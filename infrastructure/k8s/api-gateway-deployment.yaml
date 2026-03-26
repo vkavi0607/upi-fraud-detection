@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upi-api-gateway
+  namespace: fraud-platform
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: gateway
+        image: custom-registry.internal/upi-platform/api-gateway:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2000m"
+            memory: "1Gi"
+        envFrom:
+        - configMapRef:
+            name: gateway-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: upi-api-gateway
+  namespace: fraud-platform
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: api-gateway
