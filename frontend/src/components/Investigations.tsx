@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, FileText, CheckCircle, AlertTriangle, Clock, Plus, X, Search, ChevronDown, Filter } from 'lucide-react';
+import { Users, FileText, CheckCircle, AlertTriangle, Clock, Plus, X, ChevronDown, Filter } from 'lucide-react';
 import { useToast } from './Toast';
 
 type Status = 'Open' | 'In Review' | 'Escalated' | 'Closed (Fraud)' | 'Closed (False Pos)';
