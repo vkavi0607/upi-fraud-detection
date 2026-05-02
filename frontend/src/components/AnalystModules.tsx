@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { Target, TrendingUp, AlertTriangle, ShieldAlert, BarChart2, Activity } from 'lucide-react';
+import { Target, TrendingUp, AlertTriangle, ShieldAlert, BarChart2, Activity, X, ShieldCheck } from 'lucide-react';
+import { useToast } from './Toast';
 
 // ─── Shared tick helpers ─────────────────────────────
 function rand(min: number, max: number) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 // ─── TransactionRisk ─────────────────────────────────
 export const TransactionRisk = () => {
+  const { showToast } = useToast();
+  const [blockConfirm, setBlockConfirm] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const [vectors, setVectors] = useState([
     { label: 'Velocity Risk (Txn Frequency Spike)',    score: 88, color: 'from-rose-400 to-rose-600',     glow: 'rgba(225,29,72,0.45)' },
     { label: 'Geospatial IP Anomaly Mismatch',         score: 65, color: 'from-amber-400 to-amber-600',   glow: 'rgba(217,119,6,0.4)' },
@@ -70,8 +74,46 @@ export const TransactionRisk = () => {
           <p className="text-slate-400 font-medium mt-3 text-base leading-relaxed max-w-xs">
             GNN Topology confirms {composite}% vector alignment with active fraud cluster (Alpha-7). Live score updates every 2s.
           </p>
-          <button className="mt-7 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold py-3.5 px-9 rounded-xl transition-all shadow-[0_0_20px_rgba(225,29,72,0.4)] hover:shadow-[0_0_30px_rgba(225,29,72,0.6)] active:scale-95 tracking-wide">
-            Acknowledge &amp; Enforce UPI Block
+          {/* Block Confirmation Dialog */}
+          {blockConfirm && (
+            <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center" onClick={() => setBlockConfirm(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in zoom-in-95 fade-in" onClick={e => e.stopPropagation()}>
+                <div className="bg-rose-600 px-6 py-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-rose-200 text-xs font-bold uppercase tracking-widest">UPI Block Enforcement</p>
+                      <h3 className="text-white font-black text-xl mt-0.5">Confirm Block — Risk Score {composite}</h3>
+                    </div>
+                    <button onClick={() => setBlockConfirm(false)} className="text-rose-300 hover:text-white p-1"><X size={20}/></button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-4">
+                  {[{l:'Composite Risk Score', v:`${composite}/100`},{l:'Cluster', v:'Alpha-7'},{l:'GNN Recommendation', v: composite > 70 ? 'BLOCK' : 'REVIEW'},{l:'Action', v:'UPI Block + SAR Auto-Draft'}].map(({l,v}) => (
+                    <div key={l} className="flex justify-between py-2 border-b border-slate-100 last:border-0">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{l}</span>
+                      <span className={`text-sm font-bold ${l==='Composite Risk Score'?'text-rose-600':'text-slate-900'}`}>{v}</span>
+                    </div>
+                  ))}
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 font-medium">
+                    ⚠️ This action will immediately block UPI transactions and auto-draft a SAR for this account.
+                  </div>
+                </div>
+                <div className="px-6 pb-6 flex gap-3">
+                  <button onClick={() => setBlockConfirm(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors">Cancel</button>
+                  <button onClick={() => { setBlocked(true); setBlockConfirm(false); showToast({type:'action', title:'🔒 UPI Block Enforced', message:`Risk ${composite} — Block applied via NPCI API. SAR auto-drafted for Cluster Alpha-7.`, duration:5000}); }} className="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-xl font-bold text-sm transition-colors active:scale-95">Confirm &amp; Enforce Block</button>
+                </div>
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => { if (!blocked) setBlockConfirm(true); }}
+            className={`mt-7 font-bold py-3.5 px-9 rounded-xl transition-all active:scale-95 tracking-wide flex items-center gap-2 ${
+              blocked
+                ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] cursor-default'
+                : 'bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white shadow-[0_0_20px_rgba(225,29,72,0.4)] hover:shadow-[0_0_30px_rgba(225,29,72,0.6)]'
+            }`}
+          >
+            {blocked ? <><ShieldCheck size={18}/> UPI Block Active</> : 'Acknowledge & Enforce UPI Block'}
           </button>
         </div>
       </div>

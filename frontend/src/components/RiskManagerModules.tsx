@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Globe, TrendingUp, ShieldAlert, AlertTriangle, BarChart3, Activity, Eye, Target, Zap, ArrowUpRight, ArrowDownRight, Clock, Shield, Cpu } from 'lucide-react';
+import { useToast } from './Toast';
 
 function rand(min: number, max: number) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
@@ -32,6 +33,7 @@ const GEO_THREATS = [
 ];
 
 export const FraudIntelligence = () => {
+  const { showToast } = useToast();
   const [threats, setThreats]     = useState(THREAT_FEED);
   const [geoData, setGeoData]     = useState(GEO_THREATS);
   const [blockedIPs, setBlockedIPs] = useState(1842);
@@ -106,7 +108,20 @@ export const FraudIntelligence = () => {
                     <p className="text-xs text-slate-400 flex items-center gap-2">{t.country} · {t.type} · <Clock size={10} /> {t.seen}</p>
                   </div>
                 </div>
-                <button className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100 transition-colors">Block</button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setThreats(prev => prev.filter(th => th.ip !== t.ip));
+                    setBlockedIPs(v => v + 1);
+                    showToast({
+                      type: 'error',
+                      title: `IP ${t.ip} Blocked`,
+                      message: `${t.type} · ${t.country} — Added to firewall blocklist immediately.`,
+                      duration: 4000,
+                    });
+                  }}
+                  className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100 transition-colors active:scale-95"
+                >Block</button>
               </div>
             ))}
           </div>

@@ -238,8 +238,8 @@ function App() {
           {/* Investigator Specific Workflows */}
           {activeTab === 'Case Management' && <div className="animate-in fade-in slide-in-from-bottom-4"><Investigations searchTerm={searchTerm} /></div>}
           {activeTab === 'Graph Visualizer' && <div className="animate-in fade-in slide-in-from-bottom-4 h-full"><GraphVisualizer /></div>}
-          {activeTab === 'Evidence Chain' && <div className="animate-in fade-in slide-in-from-bottom-4"><InvestigatorOverview /></div>}
-          {activeTab === 'Forensic Timeline' && <div className="animate-in fade-in slide-in-from-bottom-4"><InvestigatorOverview /></div>}
+          {activeTab === 'Evidence Chain' && <div className="animate-in fade-in duration-300"><InvestigatorOverview /></div>}
+          {activeTab === 'Forensic Timeline' && <div className="animate-in fade-in duration-300"><InvestigatorOverview /></div>}
           
           {/* Universal System Settings */}
           {activeTab === 'Settings' && <div className="animate-in fade-in slide-in-from-bottom-4"><SettingsModule /></div>}

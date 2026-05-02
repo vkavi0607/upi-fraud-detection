@@ -45,7 +45,7 @@ const NODE_COLOR: Record<NodeType, { fill: string; stroke: string; glow: string 
 
 function pct(v: number, dim: number) { return (v / 100) * dim; }
 
-export const GraphVisualizer = () => {
+export const GraphVisualizer = ({ hideHeader = false }: { hideHeader?: boolean }) => {
   const svgRef     = useRef<SVGSVGElement>(null);
   const [nodes, setNodes]   = useState(INITIAL_NODES);
   const [zoom,  setZoom]    = useState(1);
@@ -94,27 +94,29 @@ export const GraphVisualizer = () => {
 
   return (
     <div className="bg-slate-950 rounded-2xl border border-slate-800 shadow-2xl flex flex-col h-full w-full overflow-hidden relative">
-      {/* Header */}
-      <div className="px-5 py-3.5 border-b border-slate-800 flex justify-between items-center bg-slate-900/80 backdrop-blur-md z-10 flex-shrink-0">
-        <h2 className="text-base font-bold text-white flex items-center gap-2">
-          <Network className="text-indigo-400" size={18}/> Neo4j Fraud Topology — Cluster Alpha-7
-          <span className="text-xs font-semibold text-slate-500 ml-2">{nodes.length} nodes · {INITIAL_EDGES.length} edges</span>
-        </h2>
-        <div className="flex items-center gap-2">
-          {/* Legend */}
-          <div className="flex items-center gap-3 mr-3 text-[11px] font-semibold">
-            {[['Mule','#ef4444'],['Suspect','#f59e0b'],['Device','#6366f1'],['Normal','#10b981']].map(([l,c]) => (
-              <span key={l} className="flex items-center gap-1.5 text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: c as string }}/>
-                {l}
-              </span>
-            ))}
+      {/* Header — hidden when embedded inside a modal that has its own header */}
+      {!hideHeader && (
+        <div className="px-5 py-3.5 border-b border-slate-800 flex justify-between items-center bg-slate-900/80 backdrop-blur-md z-10 flex-shrink-0">
+          <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <Network className="text-indigo-400" size={18}/> Neo4j Fraud Topology — Cluster Alpha-7
+            <span className="text-xs font-semibold text-slate-500 ml-2">{nodes.length} nodes · {INITIAL_EDGES.length} edges</span>
+          </h2>
+          <div className="flex items-center gap-2">
+            {/* Legend */}
+            <div className="flex items-center gap-3 mr-3 text-[11px] font-semibold">
+              {[['Mule','#ef4444'],['Suspect','#f59e0b'],['Device','#6366f1'],['Normal','#10b981']].map(([l,c]) => (
+                <span key={l} className="flex items-center gap-1.5 text-slate-400">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: c as string }}/>
+                  {l}
+                </span>
+              ))}
+            </div>
+            <button onClick={() => setZoom(z => Math.min(2.5, z + 0.2))} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"><ZoomIn size={16}/></button>
+            <button onClick={() => setZoom(z => Math.max(0.4, z - 0.2))} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"><ZoomOut size={16}/></button>
+            <button onClick={() => { setZoom(1); setSelected(null); }} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"><RotateCcw size={16}/></button>
           </div>
-          <button onClick={() => setZoom(z => Math.min(2.5, z + 0.2))} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"><ZoomIn size={16}/></button>
-          <button onClick={() => setZoom(z => Math.max(0.4, z - 0.2))} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"><ZoomOut size={16}/></button>
-          <button onClick={() => { setZoom(1); setSelected(null); }} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"><RotateCcw size={16}/></button>
         </div>
-      </div>
+      )}
 
       {/* Canvas */}
       <div className="flex-1 relative overflow-hidden" style={{ minHeight: 0 }}>

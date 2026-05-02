@@ -16,7 +16,7 @@ export const Sidebar = ({ activeTab, setActiveTab, role }: { activeTab: string, 
       case 'Fraud Analyst': 
         return [...common, {name: 'Live Transactions', icon: ActivitySquare}, {name: 'Fraud Alerts', icon: ShieldAlert}, {name: 'Transaction Risk Analysis', icon: BarChart3}, {name: 'Account Investigation', icon: Users}, {name: 'Fraud Trends', icon: TrendingUp}];
       case 'Senior Investigator': 
-        return [...common, {name: 'Case Management', icon: FileText}, {name: 'Graph Visualizer', icon: Network}, {name: 'Evidence Chain', icon: GitBranch}, {name: 'Forensic Timeline', icon: Eye}];
+        return [...common, {name: 'Evidence Chain', icon: GitBranch}, {name: 'Case Management', icon: FileText}, {name: 'Graph Visualizer', icon: Network}, {name: 'Forensic Timeline', icon: Eye}];
       case 'Risk Manager': 
         return [...common, {name: 'Fraud Intelligence', icon: Globe}, {name: 'Pattern Analytics', icon: BarChart3}, {name: 'Risk Alerts', icon: ShieldAlert}, {name: 'Compliance', icon: Shield}];
       default: 
